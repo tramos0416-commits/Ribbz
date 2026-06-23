@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="RIBBZ/RIBBZ.vcxproj" />
+  <Project Path="RIBBZ/RIBBZ.vcxproj" Id="6a3f8c13-e91b-40ae-b96b-83e2b2a9cd5d" />
 </Solution>

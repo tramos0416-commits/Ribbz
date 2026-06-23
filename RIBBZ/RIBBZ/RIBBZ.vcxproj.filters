@@ -13,10 +13,48 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\player">
+      <UniqueIdentifier>{96d2bd43-6c07-4267-86f9-28643cf12faa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\camera">
+      <UniqueIdentifier>{7a07d7a4-2d69-406d-9bd9-b8659183debd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\game">
+      <UniqueIdentifier>{66a59226-9bf7-4b13-95ad-3337743f1a23}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="main.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="world.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="player.c">
+      <Filter>Source Files\player</Filter>
+    </ClCompile>
+    <ClCompile Include="camera.c">
+      <Filter>Source Files\camera</Filter>
+    </ClCompile>
+    <ClCompile Include="game.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="player.h">
+      <Filter>Source Files\player</Filter>
+    </ClInclude>
+    <ClInclude Include="camera.h">
+      <Filter>Source Files\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="world.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game.h">
+      <Filter>Source Files\game</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
