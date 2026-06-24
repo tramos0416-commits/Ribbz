@@ -4,6 +4,7 @@
 #include "raymath.h"
 #include "player.h"
 #include <stdio.h>
+#include <math.h>
 
 #define FRAME_COUNT 24
 #define DIR_COUNT 8
@@ -111,16 +112,36 @@ void UpdatePlayer(void)
 
         Vector2 input = { 0 };
 
-    if (IsKeyDown(KEY_W)) input.y -= 1;
-    if (IsKeyDown(KEY_S)) input.y += 1;
-    if (IsKeyDown(KEY_A)) input.x -= 1;
-    if (IsKeyDown(KEY_D)) input.x += 1;
+        if (IsKeyDown(KEY_W)) input.y -= 1;
+        if (IsKeyDown(KEY_S)) input.y += 1;
+        if (IsKeyDown(KEY_A)) input.x -= 1;
+        if (IsKeyDown(KEY_D)) input.x += 1;
+
+        /* Gamepad input (Gamepad 0) */
+        if (IsGamepadAvailable(0))
+        {
+            /* D-pad (digital buttons) */
+            if (IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_UP)) input.y -= 1;
+            if (IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_DOWN)) input.y += 1;
+            if (IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_LEFT)) input.x -= 1;
+            if (IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_RIGHT)) input.x += 1;
+
+            /* Left stick (analog with deadzone) */
+            const float stickDeadzone = 0.2f;
+            float stickX = GetGamepadAxisMovement(0, GAMEPAD_AXIS_LEFT_X);
+            float stickY = GetGamepadAxisMovement(0, GAMEPAD_AXIS_LEFT_Y);
+
+            if (fabsf(stickX) > stickDeadzone) input.x += stickX;
+            if (fabsf(stickY) > stickDeadzone) input.y += stickY;
+        }
 
     if (Vector2Length(input) > 0)
         input = Vector2Normalize(input);
 
     float speedLimit = maxSpeed;
     if (IsKeyDown(KEY_LEFT_SHIFT))
+        speedLimit = sprintSpeed;
+    if (IsGamepadAvailable(0) && IsGamepadButtonDown(0, 4))  /* 4 = LEFT_SHOULDER */
         speedLimit = sprintSpeed;
 
     if (Vector2Length(input) > 0)

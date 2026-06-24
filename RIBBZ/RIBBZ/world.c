@@ -4,59 +4,65 @@
 #define TILE_W 64
 #define TILE_H 32
 
-#define MAP_W 31
+#define MAP_W 43
 #define MAP_H 30
 
-static Texture2D tileRed;
-static Texture2D tileYellow;
+static Texture2D tileLightGrass;
+static Texture2D tileDarkGrass;
 
 static Texture2D tileCornerCliff;
 static Texture2D tileLeftCliff;
 static Texture2D tileRightCliff;
+static Texture2D tileCreaseCliff;
+static Texture2D tileLeftCliffCorner;
+static Texture2D tileRightCliffCorner;
 
 // ==================================================
 // Legend for making the tiles and stuff
 //
 //0 = empty
-//1 = red
-//2 = yellow
+//1 = lightGrass
+//2 = darkGrass
 //3 = cornerCliff
 //4 = leftCliff
 //5 = rightCliff
+//6 = creaseCliff
+//7 = leftCliffCorner
+//8 = rightCliffCorner
 // ==================================================
 
 static int map[MAP_H][MAP_W] =
 {
-    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,5,1,2,1,2,1,2,1,2,1,2},
-    {1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,5,2,1,2,1,2,1,2,1,2,1},
-    {1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,1,5,1,2,1,2,1,2,1,2,1,2},
-    {1,2,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,2,1,5,2,1,2,1,2,1,2,1,2,1},
-    {1,2,1,2,1,1,1,1,1,1,1,1,1,1,1,1,2,1,2,1,5,1,2,1,2,1,2,1,2,1,2},
-    {1,2,1,2,1,2,2,2,2,2,2,2,2,2,2,1,2,1,2,1,5,2,1,2,1,2,1,2,1,2,1},
-    {1,2,1,2,1,2,1,1,1,1,1,1,1,1,2,1,2,1,2,1,5,1,2,1,2,1,2,1,2,1,2},
-    {1,2,1,2,1,2,1,2,2,2,2,2,2,1,2,1,2,1,2,1,5,2,1,2,1,2,1,2,1,2,1},
-    {1,2,1,2,1,2,1,2,1,1,1,1,2,1,2,1,2,1,2,1,5,1,2,1,2,1,2,1,2,1,2},
-    {1,2,1,2,1,2,1,2,1,2,2,1,2,1,2,1,2,1,2,1,5,2,1,2,1,2,1,2,1,2,1},
+    {9,9,9,9,9,9,9,9,9,9,1,1,1,1,1,1,1,1,1,1,1,8,1,2,1,2,1,2,1,8},
+    {1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,5,2,1,2,1,2,1,2,1,2,1,8},
+    {1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,1,5,1,2,1,2,1,2,1,2,1,2,5,8},
+    {1,2,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,2,1,5,2,1,2,1,2,1,2,1,2,1,5,5,8},
+    {1,2,1,2,1,1,1,1,1,1,1,1,1,1,1,1,2,1,2,1,5,1,2,1,2,1,2,1,2,1,2,5,5,5,8},
+    {1,2,1,2,1,2,2,2,2,2,2,2,2,2,2,1,2,1,2,1,5,2,1,2,1,2,1,2,1,2,1,5,5,5,5,8},
+    {1,2,1,2,1,2,1,1,1,1,1,1,1,1,2,1,2,1,2,1,5,1,2,1,2,1,2,1,2,1,2,5,5,5,5,5,8},
+    {1,2,1,2,1,2,1,2,2,2,2,2,2,1,2,1,2,1,2,1,5,2,1,2,1,2,1,2,1,2,1,5,5,5,5,5,5,8},
+    {1,2,1,2,1,2,1,2,1,1,1,1,2,1,2,1,2,1,2,1,5,1,2,1,2,1,2,1,2,1,2,5,5,5,5,5,5,5,8},
+    {1,2,1,2,1,2,1,2,1,2,2,1,2,1,2,1,2,1,2,1,5,2,1,2,1,2,1,2,1,2,1,5,5,5,5,5,5,5,5},
 
-    {1,2,1,2,1,2,1,2,1,2,2,1,2,1,2,1,2,1,2,1,5,5,5,5,5,5,5,5,5},
-    {1,2,1,2,1,2,1,2,1,2,2,1,2,1,2,1,2,1,2,1,5,5,5,5,5,5,5,5,5},
-    {1,2,1,2,1,2,1,2,1,2,2,1,2,1,2,1,2,1,2,1,5,5,5,5,5,5,5,5,5},
-    {1,2,1,2,1,2,1,2,1,2,2,1,2,1,2,1,2,1,2,1,5,5,5,5,5,5,5,5,5},
-    {1,2,1,2,1,2,1,2,1,2,2,1,2,1,2,1,2,1,2,1,5,5,5,5,5,5,5,5,5},
-    {1,2,1,2,1,2,1,2,1,2,2,1,2,1,2,1,2,1,2,1,5,5,5,5,5,5,5,5,5},
-    {1,2,1,2,1,2,1,2,1,2,2,1,2,1,2,1,2,1,2,1,5,5,5,5,5,5,5,5,5},
-    {1,2,1,2,1,2,1,2,1,2,2,1,2,1,2,1,2,1,2,1,5,5,5,5,5,5,5,5,5},
-    {1,2,1,2,1,2,1,2,1,2,2,1,2,1,2,1,2,1,2,1,5,5,5,5,5,5,5,5,5},
+    {1,2,1,2,1,2,1,2,1,2,2,1,2,1,2,1,2,1,2,1,5,6,4,4,4,4,4,4,4,4,4,3,5,5,5,5,5,5,5},
+    {1,2,1,2,1,2,1,2,1,2,2,1,2,1,2,1,2,1,2,1,5,5,6,4,4,4,4,4,4,4,4,4,3,5,5,5,5,5,5},
+    {1,2,1,2,1,2,1,2,1,2,2,1,2,1,2,1,2,1,2,1,5,5,5,6,4,4,4,4,4,4,4,4,4,3,5,5,5,5,5},
+    {1,2,1,2,1,2,1,2,1,2,2,1,2,1,2,1,2,1,2,1,5,5,5,5,6,4,4,4,4,4,4,4,4,4,3,5,5,5,5},
+    {1,2,1,2,1,2,1,2,1,2,2,1,2,1,2,1,2,1,2,1,5,5,5,5,5,6,4,4,4,4,4,4,4,4,4,3,5,5,5},
+    {1,2,1,2,1,2,1,2,1,2,2,1,2,1,2,1,2,1,2,1,5,5,5,5,5,5,6,4,4,4,4,4,4,4,4,4,3,5,5},
+    {1,2,1,2,1,2,1,2,1,2,2,1,2,1,2,1,2,1,2,1,5,5,5,5,5,5,5,6,4,4,4,4,4,4,4,4,4,3,5},
+    {1,2,1,2,1,2,1,2,1,2,2,1,2,1,2,1,2,1,2,1,5,5,5,5,5,5,5,5,6,4,4,4,4,4,4,4,4,4,3},
+    {1,2,1,2,1,2,1,2,1,2,2,1,2,1,2,1,2,1,2,1,5,5,5,5,5,5,5,5,5,},
 
-    {4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,3},
-    {4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,3},
-    {4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,3},
-    {4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,3},
-    {4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,3},
-    {4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,3},
-    {4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,3},
-    {4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,3},
-    {4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,3}
+    {7,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,3,5,5,5,5,5,5,5,5},
+    {0,7,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,3,5,5,5,5,5,5,5},
+    {0,0,7,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,3,5,5,5,5,5,5},
+    {0,0,0,7,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,3,5,5,5,5,5},
+    {0,0,0,0,7,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,3,5,5,5,5},
+    {0,0,0,0,0,7,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,3,5,5,5},
+    {0,0,0,0,0,0,7,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,3,5,5},
+    {0,0,0,0,0,0,0,7,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,3,5},
+    {0,0,0,0,0,0,0,0,7,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,3}
 
 };
 
@@ -70,19 +76,25 @@ static Vector2 IsoToScreen(int x, int y)
 
 void InitWorld(void)
 {
-    tileRed = LoadTexture("assets/tiles/red.png");
-    tileYellow = LoadTexture("assets/tiles/yellow.png");
+    tileLightGrass = LoadTexture("assets/tiles/lightGrass.png");
+    tileDarkGrass = LoadTexture("assets/tiles/darkGrass.png");
 
     tileCornerCliff = LoadTexture("assets/tiles/cornerCliff.png");
     tileLeftCliff = LoadTexture("assets/tiles/leftCliff.png");
     tileRightCliff = LoadTexture("assets/tiles/rightCliff.png");
+    tileCreaseCliff = LoadTexture("assets/tiles/creaseCliff.png");
+    tileLeftCliffCorner = LoadTexture("assets/tiles/leftCliffCorner.png");
+    tileRightCliffCorner = LoadTexture("assets/tiles/rightCliffCorner.png");
 
-    SetTextureFilter(tileRed, TEXTURE_FILTER_POINT);
-    SetTextureFilter(tileYellow, TEXTURE_FILTER_POINT);
+    SetTextureFilter(tileLightGrass, TEXTURE_FILTER_POINT);
+    SetTextureFilter(tileDarkGrass, TEXTURE_FILTER_POINT);
 
     SetTextureFilter(tileCornerCliff, TEXTURE_FILTER_POINT);
     SetTextureFilter(tileLeftCliff, TEXTURE_FILTER_POINT);
     SetTextureFilter(tileRightCliff, TEXTURE_FILTER_POINT);
+    SetTextureFilter(tileCreaseCliff, TEXTURE_FILTER_POINT);
+    SetTextureFilter(tileLeftCliffCorner, TEXTURE_FILTER_POINT);
+    SetTextureFilter(tileRightCliffCorner, TEXTURE_FILTER_POINT);
 }
 
 void SetWorldMoveDir(Vector2 dir)
@@ -104,7 +116,7 @@ void DrawWorld(Vector2 playerPos)
 
             Vector2 pos = IsoToScreen(x, y);
 
-            Texture2D* tile = &tileRed;
+            Texture2D* tile = &tileLightGrass;
 
             switch (map[y][x])
             {
@@ -112,11 +124,11 @@ void DrawWorld(Vector2 playerPos)
                 continue; // skip empty tiles
 
             case 1:
-                tile = &tileRed;
+                tile = &tileLightGrass;
                 break;
 
             case 2:
-                tile = &tileYellow;
+                tile = &tileDarkGrass;
                 break;
 
             case 3:
@@ -131,8 +143,20 @@ void DrawWorld(Vector2 playerPos)
                 tile = &tileRightCliff;
                 break;
 
+            case 6:
+                tile = &tileCreaseCliff;
+                break;
+
+            case 7:
+                tile = &tileLeftCliffCorner;
+                break;
+
+            case 8:
+                tile = &tileRightCliffCorner;
+                break;
+
             default:
-                tile = &tileRed;
+                tile = &tileLightGrass;
                 break;
             }
 
@@ -148,11 +172,11 @@ void DrawWorld(Vector2 playerPos)
 
 void UnloadWorld(void)
 {
-    if (tileRed.id)
-        UnloadTexture(tileRed);
+    if (tileLightGrass.id)
+        UnloadTexture(tileLightGrass);
 
-    if (tileYellow.id)
-        UnloadTexture(tileYellow);
+    if (tileDarkGrass.id)
+        UnloadTexture(tileDarkGrass);
 
     if (tileCornerCliff.id)
         UnloadTexture(tileCornerCliff);
@@ -162,4 +186,7 @@ void UnloadWorld(void)
 
     if (tileRightCliff.id)
         UnloadTexture(tileRightCliff);
+
+    if (tileRightCliff.id)
+        UnloadTexture(tileCreaseCliff);
 }
