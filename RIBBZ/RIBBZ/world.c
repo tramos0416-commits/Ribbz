@@ -1,117 +1,165 @@
 #include "raylib.h"
-#include "raymath.h"
 #include "world.h"
 
-// ==================================================
-// CONFIG
-// ==================================================
 #define TILE_W 64
 #define TILE_H 32
 
-#define RADIUS 7   // 15x15 circle (7 tiles each direction)
+#define MAP_W 31
+#define MAP_H 30
 
-// ==================================================
-// TILES
-// ==================================================
 static Texture2D tileRed;
 static Texture2D tileYellow;
 
-// ==================================================
-// MOVEMENT DIRECTION (for look-ahead)
-// ==================================================
-static Vector2 lastMoveDir = { 0, 0 };
+static Texture2D tileCornerCliff;
+static Texture2D tileLeftCliff;
+static Texture2D tileRightCliff;
 
 // ==================================================
-// ISO CONVERSION
+// Legend for making the tiles and stuff
+//
+//0 = empty
+//1 = red
+//2 = yellow
+//3 = cornerCliff
+//4 = leftCliff
+//5 = rightCliff
 // ==================================================
+
+static int map[MAP_H][MAP_W] =
+{
+    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,5,1,2,1,2,1,2,1,2,1,2},
+    {1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,5,2,1,2,1,2,1,2,1,2,1},
+    {1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,1,5,1,2,1,2,1,2,1,2,1,2},
+    {1,2,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,2,1,5,2,1,2,1,2,1,2,1,2,1},
+    {1,2,1,2,1,1,1,1,1,1,1,1,1,1,1,1,2,1,2,1,5,1,2,1,2,1,2,1,2,1,2},
+    {1,2,1,2,1,2,2,2,2,2,2,2,2,2,2,1,2,1,2,1,5,2,1,2,1,2,1,2,1,2,1},
+    {1,2,1,2,1,2,1,1,1,1,1,1,1,1,2,1,2,1,2,1,5,1,2,1,2,1,2,1,2,1,2},
+    {1,2,1,2,1,2,1,2,2,2,2,2,2,1,2,1,2,1,2,1,5,2,1,2,1,2,1,2,1,2,1},
+    {1,2,1,2,1,2,1,2,1,1,1,1,2,1,2,1,2,1,2,1,5,1,2,1,2,1,2,1,2,1,2},
+    {1,2,1,2,1,2,1,2,1,2,2,1,2,1,2,1,2,1,2,1,5,2,1,2,1,2,1,2,1,2,1},
+
+    {1,2,1,2,1,2,1,2,1,2,2,1,2,1,2,1,2,1,2,1,5,5,5,5,5,5,5,5,5},
+    {1,2,1,2,1,2,1,2,1,2,2,1,2,1,2,1,2,1,2,1,5,5,5,5,5,5,5,5,5},
+    {1,2,1,2,1,2,1,2,1,2,2,1,2,1,2,1,2,1,2,1,5,5,5,5,5,5,5,5,5},
+    {1,2,1,2,1,2,1,2,1,2,2,1,2,1,2,1,2,1,2,1,5,5,5,5,5,5,5,5,5},
+    {1,2,1,2,1,2,1,2,1,2,2,1,2,1,2,1,2,1,2,1,5,5,5,5,5,5,5,5,5},
+    {1,2,1,2,1,2,1,2,1,2,2,1,2,1,2,1,2,1,2,1,5,5,5,5,5,5,5,5,5},
+    {1,2,1,2,1,2,1,2,1,2,2,1,2,1,2,1,2,1,2,1,5,5,5,5,5,5,5,5,5},
+    {1,2,1,2,1,2,1,2,1,2,2,1,2,1,2,1,2,1,2,1,5,5,5,5,5,5,5,5,5},
+    {1,2,1,2,1,2,1,2,1,2,2,1,2,1,2,1,2,1,2,1,5,5,5,5,5,5,5,5,5},
+
+    {4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,3},
+    {4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,3},
+    {4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,3},
+    {4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,3},
+    {4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,3},
+    {4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,3},
+    {4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,3},
+    {4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,3},
+    {4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,3}
+
+};
+
 static Vector2 IsoToScreen(int x, int y)
 {
     return (Vector2) {
-        (x - y)* (TILE_W / 2),
-            (x + y)* (TILE_H / 2)
+        (float)((x - y) * (TILE_W / 2)),
+            (float)((x + y) * (TILE_H / 2))
     };
 }
 
-// ==================================================
-// REQUIRED EXTERNAL HOOK (FIXES LNK2019)
-// ==================================================
-void SetWorldMoveDir(Vector2 dir)
-{
-    if (Vector2Length(dir) > 0.0001f)
-    {
-        Vector2 n = Vector2Normalize(dir);
-        lastMoveDir = n;
-    }
-}
-
-// ==================================================
-// INIT WORLD
-// ==================================================
 void InitWorld(void)
 {
     tileRed = LoadTexture("assets/tiles/red.png");
     tileYellow = LoadTexture("assets/tiles/yellow.png");
 
-    if (tileRed.id == 0 || tileYellow.id == 0)
-    {
-        TraceLog(LOG_ERROR, "FAILED TO LOAD TILE TEXTURES");
-    }
+    tileCornerCliff = LoadTexture("assets/tiles/cornerCliff.png");
+    tileLeftCliff = LoadTexture("assets/tiles/leftCliff.png");
+    tileRightCliff = LoadTexture("assets/tiles/rightCliff.png");
 
     SetTextureFilter(tileRed, TEXTURE_FILTER_POINT);
     SetTextureFilter(tileYellow, TEXTURE_FILTER_POINT);
+
+    SetTextureFilter(tileCornerCliff, TEXTURE_FILTER_POINT);
+    SetTextureFilter(tileLeftCliff, TEXTURE_FILTER_POINT);
+    SetTextureFilter(tileRightCliff, TEXTURE_FILTER_POINT);
 }
 
-// ==================================================
-// DRAW 15x15 CIRCLE AROUND PLAYER
-// ==================================================
+void SetWorldMoveDir(Vector2 dir)
+{
+    // unused for now
+    (void)dir;
+}
+
 void DrawWorld(Vector2 playerPos)
 {
-    if (tileRed.id == 0 || tileYellow.id == 0) return;
+    (void)playerPos;
 
-    // -----------------------------------------
-    // WORLD → TILE SPACE
-    // -----------------------------------------
-    float fx = playerPos.x / TILE_W;
-    float fy = playerPos.y / TILE_H;
-
-    int px = (int)fx;
-    int py = (int)fy;
-
-    // -----------------------------------------
-    // LOOK-AHEAD (movement bias)
-    // -----------------------------------------
-    px += (int)(lastMoveDir.x * 1.5f);
-    py += (int)(lastMoveDir.y * 1.5f);
-
-    // -----------------------------------------
-    // RENDER CIRCLE (15x15 area)
-    // -----------------------------------------
-    for (int y = -RADIUS; y <= RADIUS; y++)
+    for (int y = 0; y < MAP_H; y++)
     {
-        for (int x = -RADIUS; x <= RADIUS; x++)
+        for (int x = 0; x < MAP_W; x++)
         {
-            // circular mask (removes corners)
-            if (x * x + y * y > RADIUS * RADIUS)
+            if (map[y][x] == 0)
                 continue;
 
-            int wx = px + x;
-            int wy = py + y;
+            Vector2 pos = IsoToScreen(x, y);
 
-            Vector2 pos = IsoToScreen(wx, wy);
+            Texture2D* tile = &tileRed;
 
-            Texture2D tile =
-                ((wx + wy) & 1) ? tileYellow : tileRed;
+            switch (map[y][x])
+            {
+            case 0:
+                continue; // skip empty tiles
 
-            DrawTexture(tile, (int)pos.x, (int)pos.y, WHITE);
+            case 1:
+                tile = &tileRed;
+                break;
+
+            case 2:
+                tile = &tileYellow;
+                break;
+
+            case 3:
+                tile = &tileCornerCliff;
+                break;
+
+            case 4:
+                tile = &tileLeftCliff;
+                break;
+
+            case 5:
+                tile = &tileRightCliff;
+                break;
+
+            default:
+                tile = &tileRed;
+                break;
+            }
+
+            DrawTexture(
+                *tile,
+                (int)pos.x,
+                (int)pos.y,
+                WHITE
+            );
         }
     }
 }
 
-// ==================================================
-// CLEANUP
-// ==================================================
 void UnloadWorld(void)
 {
-    if (tileRed.id > 0) UnloadTexture(tileRed);
-    if (tileYellow.id > 0) UnloadTexture(tileYellow);
+    if (tileRed.id)
+        UnloadTexture(tileRed);
+
+    if (tileYellow.id)
+        UnloadTexture(tileYellow);
+
+    if (tileCornerCliff.id)
+        UnloadTexture(tileCornerCliff);
+
+    if (tileLeftCliff.id)
+        UnloadTexture(tileLeftCliff);
+
+    if (tileRightCliff.id)
+        UnloadTexture(tileRightCliff);
 }

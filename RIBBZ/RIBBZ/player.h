@@ -4,5 +4,6 @@
 void InitPlayer(void);
 void UpdatePlayer(void);
 void DrawPlayer(void);
+void UnloadPlayer(void);
 
 Vector2 GetPlayerPos(void);

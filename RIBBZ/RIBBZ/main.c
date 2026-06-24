@@ -6,15 +6,15 @@
 int main(void)
 {
     // TRUE INTERNAL RESOLUTION
-    const int gameW = 1440;
-    const int gameH = 960;
+    const int gameW = 320;
+    const int gameH = 240;
 
     // WINDOW SCALE (4x)
-    const int scale = 1;
+    const int scale = 4;
 
     InitWindow(gameW * scale, gameH * scale, "RIBBZ ENGINE - ALPHA version 1");
 
-    SetTargetFPS(30);
+    SetTargetFPS(24);
 
     InitWorld();
     InitPlayer();
@@ -71,6 +71,7 @@ int main(void)
     UnloadRenderTexture(target);
 
     UnloadWorld();
+    UnloadPlayer();
     CloseWindow();
 
     return 0;
