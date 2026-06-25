@@ -10,7 +10,7 @@ int main(void)
     const int gameH = 240;
 
     // WINDOW SCALE
-    const int scale = 4;
+    const int scale = 5;
 
     InitWindow(
         gameW * scale,
